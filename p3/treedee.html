@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head> 
+	<meta charset="utf-8">
+	<title>Ledo's Dankhammer</title>
+	<canvas id = "myCanvas" width = "1280" height = "720"></canvas><br/>
+	<script src="twgl-full.min.js"></script>
+</head>
+<body>
+</body>
+	<script> "use strict"
+	window.onload = function(){
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+		var m4 = twgl.m4;
+		
+		function draw() {
+			canvas.width = canvas.width;
+			
+			function moveToTx(x,y,z,Tx) {
+				var loc = [x,y,z];
+				var locTx = m4.transformPoint(Tx,loc);
+				context.moveTo(locTx[0]+250,-locTx[1]+250);
+			}
+			function lineToTx(x,y,z,Tx) {
+				var loc = [x,y,z];
+				var locTx = m4.transformPoint(Tx,loc);
+				context.lineTo(locTx[0]+250,-locTx[1]+250);			
+			}
+			
+			var potato = m4.translation(250, 250, 250);
+			context.strokeStyle = "red";
+			context.beginPath();
+			moveToTx(0,0,0,potato);
+			lineToTx(150,150,0, potato);
+			context.stroke();
+			
+			context.beginPath();
+			context.moveTo(0,0);
+			context.lineTo(150,150);
+			context.stroke();
+		}
+		<!--slider1.addEventListener("input",draw);-->
+		draw();
+	};
+	</script>
+</html>
