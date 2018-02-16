@@ -9,7 +9,8 @@
 	<input id="slider2" type="range" min="-100" max="100" />
 	<input id="slider3" type="range" min="30" max="100" />
 	<input id="slider4" type="range" min="-100" max="100" />
-	<input id="slider5" type="range" min="0" max="100" />
+	<input id="slider5" type="range" min="5" max="15" />
+	<input id="slider6" type="range" min="-100" max="100" />
 	hoi
 </head>
 <body>
@@ -19,7 +20,7 @@
 		var canvas = document.getElementById("myCanvas");
 		var context = canvas.getContext('2d');
 		var m4 = twgl.m4;
-		///*
+		
 		var slider1 = document.getElementById('slider1');
 		slider1.value = 0;
 		var slider2 = document.getElementById('slider2');
@@ -29,8 +30,10 @@
 		var slider4 = document.getElementById('slider4');
 		slider4.value = 0;
 		var slider5 = document.getElementById('slider5');
+		slider5.value = 5;
+		var slider6 = document.getElementById('slider6');
 		slider5.value = 0;
-		//*/
+		
 		
 		function draw() {
 			canvas.width = canvas.width;
@@ -38,18 +41,19 @@
 			var a2 = slider2.value*0.01*Math.PI;
 			var a3 = slider3.value*0.005*Math.PI;
 			var a4 = slider4.value*0.01*Math.PI;
-			var a5 = slider4.value * 10;
+			var a5 = slider5.value;
+			var a6 = slider6.value*0.01*Math.PI;
 			var axis = [0,0,1];
 			
 			function moveToTx(x,y,z,Tx) {
 				var loc = [x,y,z];
 				var locTx = m4.transformPoint(Tx,loc);
-				context.moveTo(locTx[0]+500,-locTx[1]+500);
+				context.moveTo(locTx[0],locTx[1]);
 			}
 			function lineToTx(x,y,z,Tx) {
 				var loc = [x,y,z];
 				var locTx = m4.transformPoint(Tx,loc);
-				context.lineTo(locTx[0]+500,-locTx[1]+500);			
+				context.lineTo(locTx[0],locTx[1]);			
 			}
 			function drawAxes(Tx,color) {
 				context.strokeStyle = color;
@@ -81,32 +85,61 @@
 				moveToTx(-40,0,-40,Tx); lineToTx(convergence[0], convergence[1], convergence[2],Tx); context.stroke();
 				moveToTx(40,0,-40,Tx); lineToTx(convergence[0], convergence[1], convergence[2],Tx); context.stroke();
 			}
-			//var origin = m4.translation([0,0,0]);
+			function lens(Tx, color) {
+				context.strokeStyle = color;
+				context.beginPath();
+				moveToTx(0,0,0,Tx); lineToTx(25, 15, -43,Tx); lineToTx(-25,15,-43,Tx); lineToTx(0,0,0,Tx);
+				moveToTx(-25,15,-43,Tx); lineToTx(-50,15,0,Tx); lineToTx(0,0,0,Tx); 
+				moveToTx(-50,15,0,Tx); lineToTx(-25,15,43,Tx); lineToTx(0,0,0,Tx);
+				moveToTx(-25,15,43,Tx); lineToTx(25,15,43,Tx); lineToTx(0,0,0,Tx);
+				moveToTx(25,15,43,Tx); lineToTx(50,15,0,Tx); lineToTx(0,0,0,Tx);
+				moveToTx(50,15,0,Tx); lineToTx(25,15,-43,Tx); context.stroke();
+				
+				lineToTx(37,60,-65,Tx); lineToTx(-38,60,-65,Tx); lineToTx(-25,15,-43,Tx);
+				moveToTx(-38,60,-65,Tx); lineToTx(-75,60,0,Tx); lineToTx(-50,15,0,Tx);
+				moveToTx(-75,60,0,Tx); lineToTx(-37,60,65,Tx); lineToTx(-25,15,43,Tx);
+				moveToTx(-37,60,65,Tx); lineToTx(27,60,65,Tx); lineToTx(25,15,43,Tx);
+				moveToTx(27,60,65,Tx); lineToTx(75,60,0,Tx); lineToTx(50,15,0,Tx);
+				moveToTx(75,60,0,Tx); lineToTx(37,60,-65,Tx); context.stroke();
+			}
 			var Tmodel=m4.axisRotation(axis,a2);
 
-			var eye=[500*Math.cos(a1),300,500*Math.sin(a1)];
+			var eye=[100*Math.cos(a1)*a5,60*a5,100*Math.sin(a1)*a5];
 			var target=[0,0,0];
 			var up=[0,1,0];
 			var Tcamera=m4.inverse(m4.lookAt(eye,target,up));   
     		var Tmodelorigin=m4.multiply(Tmodel,Tcamera);
+
+			var kame = m4.perspective(Math.PI/3,1,5,400);
+			var hame = m4.multiply(m4.scaling([200,-200,200]), m4.translation([500,500,0]));
 			
-			//var zoom = [.1, .1, .1];
+			var ha = m4.multiply(m4.multiply(Tcamera, kame),hame);
+			var T2 = m4.multiply(Tmodel,ha);
 			
-			var yaxis = [0,1,0];
-			var T1 = m4.multiply(m4.translation([0,100,0]), Tmodelorigin);
-			var T11 = m4.multiply(m4.axisRotation(yaxis, a4), T1);
+			//var yaxis = [0,1,0];
+			var twist = [1,0,0];
+			var turn = [0,0,1];
 			
-			base(Tmodelorigin,"black");	
+			var T1 = m4.multiply(m4.translation([0,100,0]), T2);
+			var T11 = m4.multiply(m4.axisRotation(up, a4), T1);
+			var ctf = [0,500*Math.sin(a3),500*Math.cos(a3)];
+			var T3 = m4.multiply(m4.translation(ctf),T11);
+			T3 = m4.axisRotate(T3,twist, 0.5*Math.PI);
+			T3 = m4.axisRotate(T3,turn,a6);
+			
+			base(T2,"black");	
 			neck(T11, "blue");
-			drawAxes(Tcamera,"red");
+			//neck(T3, "orange");
+			//drawAxes(T2,"red");
+			lens(T3, "orange");
 		}
 		slider1.addEventListener("input",draw);
 		slider2.addEventListener("input",draw);
 		slider3.addEventListener("input",draw);
 		slider4.addEventListener("input",draw);
 		slider5.addEventListener("input",draw);
+		slider6.addEventListener("input",draw);
 		draw();
 	};
-	</script>
-	
+	</script>	
 </html>
