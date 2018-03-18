@@ -1,0 +1,15 @@
+precision highp float;
+uniform float time;
+uniform vec2 resolution;
+varying vec3 fPosition;
+varying vec3 fNormal;
+
+const vec3 light_dir = vec3(-1.0,1.0,1.0);
+const vec3  color = vec3(1.0,0.0,1.0);
+
+void main()
+{
+  float diffuse = .4 + .4*dot(fNormal,light_dir);
+  vec3 diffuse_color = diffuse * color;
+  gl_FragColor = vec4(diffuse_color, 1.0);
+}
