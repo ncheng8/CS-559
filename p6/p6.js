@@ -55,7 +55,7 @@ function start() { "use strict";
     
     // this gives us access to the matrix uniform
     shaderProgram.MVPmatrix = gl.getUniformLocation(shaderProgram,"uMVP");
-	
+	// normal matrix uniform
 	shaderProgram.NormalMatrix = gl.getUniformLocation(shaderProgram,"normalMatrix");
     
 
@@ -244,12 +244,15 @@ function start() { "use strict";
         var tModel1 = m4.scaling([100,100,100]);
         var tModel2 = m4.multiply(m4.scaling([100,100,100]),m4.axisRotation([1,1,0],angle2));
 		var tModel3 = m4.multiply(m4.scaling([100,100,100]),m4.axisRotation([-1,1,0],-angle2));
-		
-		//var n2 = m4.transpose(m4.inverse(tModel2));
-		//var n3 = m4.transpose(m4.inverse(tModel3));
-		
         var tCamera = m4.inverse(m4.lookAt(eye,target,up));
-		var n1 = m4.transpose(m4.inverse(m4.multiply(tCamera,tModel1)));
+		var potato = tModel2;
+		potato[3] = 0;
+		potato[7] = 0;
+		potato[11] = 0;
+		potato[12] = 0;
+		potato[13] = 0;
+		potato[14] = 0;
+		var n1 = m4.transpose(m4.inverse(potato));
         var tProjection = m4.perspective(Math.PI/3,1,10,1000);
     
         var tMVP1=m4.multiply(m4.multiply(tModel1,tCamera),tProjection);
