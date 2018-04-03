@@ -49,9 +49,15 @@ function start() { "use strict";
     
     shaderProgram.ColorAttribute = gl.getAttribLocation(shaderProgram, "vColor");
     gl.enableVertexAttribArray(shaderProgram.ColorAttribute);    
+	
+	shaderProgram.NormalAttribute = gl.getAttribLocation(shaderProgram, "vNormal");
+	gl.enableVertexAttribArray(shaderProgram.NormalAttribute);    
     
     // this gives us access to the matrix uniform
     shaderProgram.MVPmatrix = gl.getUniformLocation(shaderProgram,"uMVP");
+	
+	shaderProgram.NormalMatrix = gl.getUniformLocation(shaderProgram,"normalMatrix");
+    
 
     // Data ...
     
@@ -65,20 +71,20 @@ function start() { "use strict";
            1,-1,-1,  -1,-1,-1,  -1, 1,-1,   1, 1,-1 ]);
 
     var vertexPos_second = new Float32Array(
-        [  3, 3, 3,   1, 3, 3,   1, 1, 3,   3, 1, 3,
-           3, 3, 3,   3, 1, 3,   3, 1, 1,   3, 3, 1,
-           3, 3, 3,   3, 3, 1,   1, 3, 1,   1, 3, 3,
-           1, 3, 3,   1, 3, 1,   1, 1, 1,   1, 1, 3,
-           1, 1, 1,   3, 1, 1,   3, 1, 3,   1, 1, 3,
-           3, 1, 1,   1, 1, 1,   1, 3, 1,   3, 3, 1 ]);
+        [  3, 3, 1,   1, 3, 1,   1, 1, 1,   3, 1, 1,
+           3, 3, 1,   3, 1, 1,   3, 1, -1,   3, 3, -1,
+           3, 3, 1,   3, 3, -1,   1, 3, -1,   1, 3, 1,
+           1, 3, 1,   1, 3, -1,   1, 1, -1,   1, 1, 1,
+           1, 1, -1,   3, 1, -1,   3, 1, 1,   1, 1, 1,
+           3, 1, -1,   1, 1, -1,   1, 3, -1,   3, 3, -1]);
 
 	var vertexPos_third = new Float32Array(
-		[  -3,-3,-3,  -1,-3,-3,  -1,-1,-3,  -3,-1,-3,
-		   -3,-3,-3,  -3,-1,-3,  -3,-1,-1,  -3,-3,-1,
-		   -3,-3,-3,  -3,-3,-1,  -1,-3,-1,  -1,-3,-3,
-		   -1,-3,-3,  -1,-3,-1,  -1,-1,-1,  -1,-1,-3,
-		   -1,-1,-1,  -3,-1,-1,  -3,-1,-3,  -1,-1,-3,
-		   -3,-1,-1,  -1,-1,-1,  -1,-3,-1,  -3,-3,-1 ]);
+		[  -3,3,-1,  -1,3,-1,  -1,1,-1,  -3,1,-1,
+		   -3,3,-1,  -3,1,-1,  -3,1,1,  -3,3,1,
+		   -3,3,-1,  -3,3,1,  -1,3,1,  -1,3,-1,
+		   -1,3,-1,  -1,3,1,  -1,1,1,  -1,1,-1,
+		   -1,1,1,  -3,1,1,  -3,1,-1,  -1,1,-1,
+		   -3,1,1,  -1,1,1,  -1,3,1,  -3,3,1 ]);
     // vertex colors
     var vertexColors_first = new Float32Array(
         [  0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1,
@@ -127,7 +133,44 @@ function start() { "use strict";
           12,13,14,  12,14,15,    // left
           16,17,18,  16,18,19,    // bottom
 	      20,21,22,  20,22,23 ]); // back	
+	var vertexNormals = new Float32Array(
+	[
+    // Front
+     0.0,  0.0,  1.0,
+     0.0,  0.0,  1.0,
+     0.0,  0.0,  1.0,
+     0.0,  0.0,  1.0,
 
+    // Back
+     0.0,  0.0, -1.0,
+     0.0,  0.0, -1.0,
+     0.0,  0.0, -1.0,
+     0.0,  0.0, -1.0,
+
+    // Top
+     0.0,  1.0,  0.0,
+     0.0,  1.0,  0.0,
+     0.0,  1.0,  0.0,
+     0.0,  1.0,  0.0,
+
+    // Bottom
+     0.0, -1.0,  0.0,
+     0.0, -1.0,  0.0,
+     0.0, -1.0,  0.0,
+     0.0, -1.0,  0.0,
+
+    // Right
+     1.0,  0.0,  0.0,
+     1.0,  0.0,  0.0,
+     1.0,  0.0,  0.0,
+     1.0,  0.0,  0.0,
+
+    // Left
+    -1.0,  0.0,  0.0,
+    -1.0,  0.0,  0.0,
+    -1.0,  0.0,  0.0,
+    -1.0,  0.0,  0.0
+  ]);
     // we need to put the vertices into a buffer so we can
     // block transfer them to the graphics hardware
     var trianglePosBuffer_first = gl.createBuffer();
@@ -179,6 +222,12 @@ function start() { "use strict";
 	var indexBuffer_third = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer_third);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, triangleIndices_third, gl.STATIC_DRAW);
+	
+	// buffer for normals
+	var normalBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, vertexNormals, gl.STATIC_DRAW);
+
 
                   // Scene (re-)draw routine
     function draw() {
@@ -193,9 +242,14 @@ function start() { "use strict";
         var up = [0,1,0];
     
         var tModel1 = m4.scaling([100,100,100]);
-        var tModel2 = m4.multiply(m4.scaling([100,100,100]),m4.axisRotation([1,1,1],angle2));
-		var tModel3 = m4.multiply(m4.scaling([100,100,100]),m4.axisRotation([1,1,1],-angle2));
+        var tModel2 = m4.multiply(m4.scaling([100,100,100]),m4.axisRotation([1,1,0],angle2));
+		var tModel3 = m4.multiply(m4.scaling([100,100,100]),m4.axisRotation([-1,1,0],-angle2));
+		
+		//var n2 = m4.transpose(m4.inverse(tModel2));
+		//var n3 = m4.transpose(m4.inverse(tModel3));
+		
         var tCamera = m4.inverse(m4.lookAt(eye,target,up));
+		var n1 = m4.transpose(m4.inverse(m4.multiply(tCamera,tModel1)));
         var tProjection = m4.perspective(Math.PI/3,1,10,1000);
     
         var tMVP1=m4.multiply(m4.multiply(tModel1,tCamera),tProjection);
@@ -218,6 +272,11 @@ function start() { "use strict";
           gl.FLOAT,false, 0, 0);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer_first);
+			//stuff for normals
+		gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+		gl.vertexAttribPointer(shaderProgram.NormalAttribute,3,gl.FLOAT,false,0,0);
+		
+		gl.uniformMatrix4fv(shaderProgram.NormalMatrix,false,n1);
 
         // Do the drawing
         gl.drawElements(gl.TRIANGLES, triangleIndices_first.length, gl.UNSIGNED_BYTE, 0);
