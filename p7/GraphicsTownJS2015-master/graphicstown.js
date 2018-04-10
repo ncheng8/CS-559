@@ -215,7 +215,7 @@ window.onload = function() {
             sunDirection : sunDirection,
             realtime : realtime
         }
-		// hey it's me. I just wanted to invade this computer and this program cause why not. Hiiiii everybody5
+
         // initialize all of the objects that haven't yet been initialized (that way objects can be added at any point)
         grobjects.forEach(function(obj) { 
             if(!obj.__initialized) {

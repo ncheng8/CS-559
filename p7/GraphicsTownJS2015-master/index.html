@@ -16,10 +16,11 @@
 <script src="ExampleObjects/ground.js"></script>
 
 <!-- This is where we load the objects for the world -->
-<script src="ExampleObjects/simplest.js"></script>
-<script src="ExampleObjects/texturedplane.js"></script>
-<script src="ExampleObjects/cube.js"></script>
+<!-- <script src="ExampleObjects/simplest.js"></script> -->
+<!-- <script src="ExampleObjects/texturedplane.js"></script>-->
+<!--<script src="ExampleObjects/cube.js"></script>-->
 <script src="ExampleObjects/tree.js"></script>
+<script src="ExampleObjects/pedastal.js"></script>
 
 <!-- I am adding the helicopter -->
 <script src="Helicopter/helicopter.js"></script>
@@ -72,6 +73,13 @@
     }
 </script>
 <script id="tree-vs" type="notjs">
+// specialized shader for the simple cube
+// we assume that the model matrix works as the normal
+//      matrix - this only is try if the model matrix
+//      it a rotate/translate
+//      (uniform scale is OK since we re-normalize)
+// color is solid
+// simple lighting
     precision highp float;
 
     attribute vec3 vpos;
@@ -93,12 +101,16 @@
     }
 </script>
 <script id="tree-fs" type="notjs">
+// simple shader that does vertex coloring
+//  (e.g. the vertex shader figures the lighting
+// note this is used for more than just the cube
     precision highp float;
     varying vec3 outColor;
     void main(void) {
         gl_FragColor = vec4(outColor, 1.0);
     }
 </script>
+
 <!-- Special Ground Plane Shader - makes a boring
   -- checkerboard
   -->
