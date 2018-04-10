@@ -52,7 +52,7 @@ var Pedastal = undefined;
     Pedastal.prototype.draw = function(drawingState) {
         // we make a model matrix to place the Pedastal in the world
         var modelM = twgl.m4.scaling([this.size,this.size,this.size]);
-		var theta = Number(drawingState.realtime)/200.0;
+		var theta = Number(drawingState.realtime)/500.0;
 		twgl.m4.rotateY(modelM, theta, modelM);
         twgl.m4.setTranslation(modelM,this.position,modelM);
         // the drawing coce is straightforward - since twgl deals with the GL stuff for us
