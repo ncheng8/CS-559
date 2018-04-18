@@ -6,6 +6,7 @@ var Tree = undefined;
 	"use strict";
 	var shaderProgram = undefined;
 	var buffers = undefined;
+	var textures = undefined;
 	
 	Tree = function Tree(name, position, size, height, color) {
 		this.name = name;
@@ -17,7 +18,7 @@ var Tree = undefined;
 	Tree.prototype.init = function(drawingState) {
 		var gl = drawingState.gl;
 		if (!shaderProgram) {
-			shaderProgram = twgl.createProgramInfo(gl, ["cube-vs", "cube-fs"]);
+			shaderProgram = twgl.createProgramInfo(gl, ["tree-vs", "tree-fs"]);
 		}
 		if (!buffers) {
 			var arrays = {
@@ -52,9 +53,17 @@ var Tree = undefined;
 				-1,1,0, -1,1,0, -1,1,0,
 				1,1,0, 1,1,0, 1,1,0
 				]}
+				/*vtex : {numComponents:2, data: [
+				
+				
+				]}*/
 			};
 			buffers = twgl.createBufferInfoFromArrays(drawingState.gl, arrays);
 		}
+		/*if (!textures) {
+			texture = twgl.createTexture(gl, {
+				src:
+		}*/
 	};
 	Tree.prototype.draw = function(drawingState) {
 		var modelM = twgl.m4.scaling([this.size, this.size, this.size]);
