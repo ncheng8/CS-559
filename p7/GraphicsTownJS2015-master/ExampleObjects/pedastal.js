@@ -24,7 +24,7 @@ var Pedastal = undefined;
         var gl=drawingState.gl;
         // create the shaders once - for all Pedastals
         if (!shaderProgram) {
-            shaderProgram = twgl.createProgramInfo(gl, ["cube-vs", "cube-fs"]);
+            shaderProgram = twgl.createProgramInfo(gl, ["tree-vs", "tree-fs"]);
         }
         if (!buffers) {
             var arrays = {

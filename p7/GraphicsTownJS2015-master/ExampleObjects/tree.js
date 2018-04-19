@@ -82,7 +82,7 @@ var Tree = undefined;
     }
 })();
 			grobjects.push(new Tree("tree1", [0,0,4], 1, 1, [1,1,.2]));
-			grobjects.push(new Tree("tree2", [0,0,-4], 1, 1, [1,1,.2]));
+			//grobjects.push(new Tree("tree2", [0,0,-4], 1, 1, [1,1,.2]));
 			grobjects.push(new Tree("tree3", [4,0,0], 1, 1, [1,1,.2]));
 			grobjects.push(new Tree("tree4", [-4,0,0], 1, 1, [1,1,.2]));
 			

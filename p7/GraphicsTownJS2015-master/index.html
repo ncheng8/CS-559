@@ -17,8 +17,8 @@
 
 <!-- This is where we load the objects for the world -->
 <!-- <script src="ExampleObjects/simplest.js"></script> -->
-<!-- <script src="ExampleObjects/texturedplane.js"></script>-->
-<!--<script src="ExampleObjects/cube.js"></script>-->
+<script src="ExampleObjects/texturedplane.js"></script>
+<script src="ExampleObjects/cube.js"></script>
 <script src="ExampleObjects/tree.js"></script>
 <script src="ExampleObjects/pedastal.js"></script>
 <script src="ExampleObjects/tetra.js"></script>
@@ -69,7 +69,7 @@
 		fPosition = pos.xyz;
 		
         float diffuse = .5 + .5*abs(dot(normal, vec4(lightdir,0.0)));
-        outColor = cubecolor * diffuse;
+        outColor = cubecolor/* * diffuse*/;
 		lightDirection = lightdir;
     }
 </script>
@@ -91,7 +91,7 @@
 		float doppy = max(0.0,dot(n,h));
 		
 		vec3 spec = pow(doppy, 32.0) * vec3(1,1,1);
-        gl_FragColor = vec4(outColor*.75 + spec, 1.0);
+        gl_FragColor = vec4(outColor/**.75 + spec*/, 1.0);
     }
 </script>
 <script id="tree-vs" type="notjs">
