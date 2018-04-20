@@ -82,7 +82,7 @@ var grobjects = grobjects || [];
     //see above comment on how this works. 
     var image = new Image();
 	image.crossOrigin = "anonymous";
-    image.src = "http://farm1.staticflickr.com/891/40675201395_dd47bd35d6_b.jpg"
+    image.src = "https://farm1.staticflickr.com/942/41568877831_7ffd4f9d1e_b.jpg"
     //useful util function to return a glProgram from just vertex and fragment shader source.
     var createGLProgram = function (gl, vSrc, fSrc) {
         var program = gl.createProgram();
