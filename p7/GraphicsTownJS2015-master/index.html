@@ -171,8 +171,8 @@
 		vec4 pos = model * vec4(vpos, 1.0);
 		fPosition = pos.xyz;
 		
-        float diffuse = .5 + .5*abs(dot(normal, vec4(lightdir,0.0)));
-        outColor = cubecolor * diffuse;
+        //float diffuse = .5 + .5*abs(dot(normal, vec4(lightdir,0.0)));
+        //outColor = cubecolor * diffuse;
 		lightDirection = lightdir;
 		fTexCoord = vtex;
 	}
@@ -187,6 +187,7 @@
 	
 	uniform sampler2D texSampler;
     void main(void) {
+		float diffuse = .35 + .5*abs(dot(fNormal, vec4(lightDirection,0.0)));
 		vec3 l = normalize(lightDirection);
 		vec3 n = normalize(fNormal.xyz);
 		vec3 e = normalize(-fPosition);
@@ -197,7 +198,7 @@
 		vec3 spec = pow(doppy, 32.0) * vec3(1,1,1);
 		vec4 texColor = texture2D(texSampler, fTexCoord);
         //gl_FragColor = vec4(outColor*.75 + spec, 1.0);
-		gl_FragColor = vec4(texColor.xyz*.75 + spec, 1.0);
+		gl_FragColor = vec4(texColor.xyz*diffuse + spec, 1.0);
 	}
 </script>
 <!-- Special Ground Plane Shader - makes a boring
