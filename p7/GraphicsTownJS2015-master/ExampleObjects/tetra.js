@@ -97,4 +97,5 @@ var SpinningTetra = undefined;
     }
 })();
 grobjects.push(new Tetra("Tetra1",[0,2,0],1,1,[0,1,1]) );
+grobjects.push(new Tetra("Tetra1",[0,2,5],1,1,[0,1,1]) );
 

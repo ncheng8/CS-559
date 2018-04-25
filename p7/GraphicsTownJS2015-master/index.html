@@ -22,6 +22,7 @@
 <script src="ExampleObjects/tree.js"></script>
 <script src="ExampleObjects/pedastal.js"></script>
 <script src="ExampleObjects/tetra.js"></script>
+<script src="ExampleObjects/bumpy_cube.js"></script>
 
 <!-- I am adding the helicopter -->
 <!-- <script src="Helicopter/helicopter.js"></script> -->
@@ -156,6 +157,7 @@
 	varying vec4 fNormal;
 	varying vec3 fPosition;
 	varying vec2 fTexCoord;
+	varying mat4 uMVn;
 
     uniform mat4 view;
     uniform mat4 proj;
@@ -177,6 +179,7 @@
         //outColor = cubecolor * diffuse;
 		lightDirection = lightdir;
 		fTexCoord = vtex;
+		uMVn = model * view;
 	}
 </script>
 <script id="tetra-fs" type="notjs">
@@ -186,19 +189,24 @@
 	varying vec4 fNormal;
 	varying vec3 fPosition;
 	varying vec2 fTexCoord;
+	varying mat4 uMVn;
 	
 	uniform sampler2D texSampler;
     void main(void) {
-		float diffuse = .35 + .5*abs(dot(fNormal, vec4(lightDirection,0.0)));
+		vec4 texColor = texture2D(texSampler, fTexCoord);
+		vec3 n_perturbed = normalize(texColor + fNormal).xyz;
+		vec3 n = (uMVn * vec4(n_perturbed,0.0)).xyz;
+		//float diffuse = .35 + .5*abs(dot(fNormal, vec4(lightDirection,0.0)));
+		float diffuse = .35 + .5*abs(dot(vec4(n,0.0), vec4(lightDirection,0.0)));
 		vec3 l = normalize(lightDirection);
-		vec3 n = normalize(fNormal.xyz);
+		//vec3 n = normalize(fNormal.xyz);
 		vec3 e = normalize(-fPosition);
 		vec3 h = normalize(e + l);
 		
 		float doppy = max(0.0,dot(n,h));
 		
 		vec3 spec = pow(doppy, 32.0) * vec3(1,1,1);
-		vec4 texColor = texture2D(texSampler, fTexCoord);
+		
         //gl_FragColor = vec4(outColor*.75 + spec, 1.0);
 		gl_FragColor = vec4(texColor.xyz*diffuse + spec, 1.0);
 	}
