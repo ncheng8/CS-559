@@ -61,7 +61,8 @@
 
 
     void main(void) {
-        gl_Position = proj * view * model * vec4(vpos, 1.0);
+        vec4 camcoord = view * model * vec4(vpos, 0.0);
+        gl_Position = proj * vec4(camcoord.xyz, 1.0);
 		
         vec4 normal = normalize(model * vec4(vnormal,0.0));
 		fNormal = normal;
